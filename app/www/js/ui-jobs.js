@@ -202,6 +202,9 @@
                 Boolean(job) || state.running,
             );
             els.jobBar.classList.toggle("is-job-active", jobActive);
+            if (els.cancelBtn) {
+                els.cancelBtn.hidden = !jobActive;
+            }
         }
         // 调试：?debugHighlight=1 时在控制台打印高亮链路每一步，便于真机排查
         // 「进度推进了但树不亮」到底卡在哪一环（仅开发用，不影响生产逻辑）。
@@ -330,6 +333,9 @@
         }
         if (state.elements?.jobBar) {
             state.elements.jobBar.classList.remove("is-job-active");
+            if (state.elements.cancelBtn) {
+                state.elements.cancelBtn.hidden = true;
+            }
         }
         if (typeof state.onAvailabilityChange === "function") {
             state.onAvailabilityChange();
@@ -868,10 +874,12 @@
         head.className = "task-row-head";
         const name = document.createElement("strong");
         name.className = "task-row-name";
-        // F6：体检任务在名称前加类型标签，避免与同一压缩包的解压任务混淆。
-        name.textContent = (job.kind === "test" ? "[体检] " : "")
-            + (job.archiveName || "压缩包");
+        name.textContent = job.archiveName || "压缩包";
         name.title = job.archivePath || "";
+        const kind = document.createElement("span");
+        kind.className = "task-row-kind";
+        kind.textContent = job.kind === "test" ? "体检" : "解压";
+        name.prepend(kind);
         const status = document.createElement("span");
         status.className = "task-row-status";
         // F7：排队任务显示位次，不拼「· 0%」尾巴。

@@ -1,6 +1,6 @@
 @font-face {
     font-family: "Inter Variable";
-    src: url("../fonts/InterVariable.woff2?v=4.6") format("woff2");
+    src: url("../fonts/InterVariable.woff2?v=4.7") format("woff2");
     font-style: normal;
     font-weight: 100 900;
     font-display: swap;
@@ -16,6 +16,8 @@
     --surface-soft: #f7f9f9;
     --ink: #1d282c;
     --muted: #5f7076;
+    --tree-meta: #53666d;
+    --skeleton: #e3e9eb;
     --line: #d7dfe1;
     --line-strong: #c4cfd2;
     --accent: #2786dc;
@@ -58,6 +60,8 @@
     --surface-soft: #2d3032;
     --ink: #e8eced;
     --muted: #9aa5a9;
+    --tree-meta: #b2bdc1;
+    --skeleton: #3a4043;
     --line: #3a3d3f;
     --line-strong: #4a4d4f;
     --accent: #4da3ff;
@@ -91,6 +95,8 @@
         --surface-soft: #2d3032;
         --ink: #e8eced;
         --muted: #9aa5a9;
+        --tree-meta: #b2bdc1;
+        --skeleton: #3a4043;
         --line: #3a3d3f;
         --line-strong: #4a4d4f;
         --accent: #4da3ff;
@@ -486,6 +492,7 @@ dd {
 }
 
 .work-grid {
+    --work-panel-height: clamp(440px, calc(100dvh - 370px), 680px);
     display: grid;
     grid-template-columns: minmax(0, 1fr) 340px;
     gap: 14px;
@@ -498,9 +505,17 @@ dd {
     overflow: hidden;
 }
 
+.file-panel {
+    display: flex;
+    flex-direction: column;
+    height: var(--work-panel-height);
+}
+
 .settings-panel {
     display: flex;
     flex-direction: column;
+    height: var(--work-panel-height);
+    max-height: var(--work-panel-height);
 }
 
 .panel-head {
@@ -552,10 +567,10 @@ dd {
     gap: 4px;
     height: 28px;
     padding: 0 8px;
-    border: 1px solid var(--line);
+    border: 1px solid transparent;
     border-radius: var(--radius-xs);
-    background: var(--control-bg);
-    color: var(--ink);
+    background: transparent;
+    color: var(--muted);
     font-size: 12px;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -569,7 +584,7 @@ dd {
 }
 
 .tree-tool-btn:hover:not(:disabled) {
-    border-color: var(--accent);
+    border-color: transparent;
     color: var(--accent);
     background: var(--accent-soft);
 }
@@ -672,7 +687,7 @@ dd {
     border-top: 1px solid var(--line);
     color: var(--muted);
     background: var(--surface-soft);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
 }
 
@@ -685,8 +700,8 @@ dd {
 }
 
 .file-tree {
-    height: clamp(280px, 48vh, 520px);
-    height: clamp(280px, 48dvh, 520px);
+    flex: 1;
+    min-height: 0;
     overflow: auto;
     overscroll-behavior-y: auto;
     padding: 8px 10px 14px;
@@ -699,6 +714,62 @@ dd {
     color: var(--muted);
     font-size: 13px;
     text-align: center;
+}
+
+.tree-skeleton-row {
+    display: grid;
+    grid-template-columns: var(--tree-cols, 26px 20px 20px 18px minmax(0, 1fr) 92px 64px 128px 22px);
+    gap: 6px;
+    align-items: center;
+    height: 32px;
+    padding: 2px 8px;
+}
+
+.tree-skeleton-row > span {
+    display: block;
+    height: 8px;
+    border-radius: var(--radius-xs);
+    background: var(--skeleton);
+    animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.tree-skeleton-row .tree-skeleton-toggle {
+    width: 8px;
+    height: 8px;
+    margin-left: 4px;
+    background: transparent;
+    border-right: 2px solid var(--skeleton);
+    border-bottom: 2px solid var(--skeleton);
+    transform: rotate(-45deg);
+}
+
+.tree-skeleton-row .tree-skeleton-checkbox,
+.tree-skeleton-row .tree-skeleton-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.tree-skeleton-row .tree-skeleton-checkbox {
+    border-radius: 4px;
+}
+
+.tree-skeleton-row .tree-skeleton-name {
+    width: var(--skeleton-width, 60%);
+    height: 10px;
+}
+
+.tree-skeleton-row .tree-skeleton-modified {
+    height: 9px;
+}
+
+.tree-skeleton-row .tree-skeleton-size {
+    width: 58px;
+    justify-self: end;
+}
+
+@keyframes skeleton-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
 }
 
 .tree-row {
@@ -930,8 +1001,8 @@ dd {
 }
 
 .tree-modified {
-    color: var(--muted);
-    font-size: 11px;
+    color: var(--tree-meta);
+    font-size: 12px;
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
     white-space: nowrap;
@@ -939,8 +1010,8 @@ dd {
 
 .tree-type {
     overflow: hidden;
-    color: var(--muted);
-    font-size: 11px;
+    color: var(--tree-meta);
+    font-size: 12px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -948,17 +1019,17 @@ dd {
 .tree-size {
     min-width: 128px;
     color: var(--ink);
-    font-size: 11px;
+    font-size: 12px;
     text-align: right;
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
     white-space: nowrap;
 }
 
-/* 大小列：数字用主色、单位用 muted，单位视觉上更弱 */
+/* 大小列：数字用主色、单位用次级色，单位视觉上更弱 */
 .tree-size-unit {
-    color: var(--muted);
-    font-size: 10px;
+    color: var(--tree-meta);
+    font-size: 11px;
     margin-left: 2px;
     letter-spacing: 0.02em;
 }
@@ -998,6 +1069,13 @@ dd {
 
 .tree-lock-shackle {
     stroke: currentColor;
+}
+
+.settings-scroll {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: auto;
+    scrollbar-gutter: stable;
 }
 
 .settings-form {
@@ -1324,13 +1402,18 @@ dd {
 
 .job-bar {
     position: static;
-    z-index: 10;
+    z-index: 40;
+    width: auto;
+    margin: 0 0 14px;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 20px;
     align-items: center;
-    margin-bottom: 14px;
     padding: 15px 17px;
+}
+
+.job-bar:not(.is-job-active) #cancelBtn {
+    display: none;
 }
 
 .job-line {
@@ -1487,10 +1570,15 @@ dd {
     display: flex;
     gap: 12px;
     align-items: center;
-    padding: 10px 12px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-lg);
-    background: var(--surface-soft);
+    padding: 12px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+}
+
+.task-row:last-child {
+    border-bottom: 0;
 }
 
 .task-row-main {
@@ -1508,10 +1596,24 @@ dd {
 }
 
 .task-row-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 13px;
+}
+
+.task-row-kind {
+    flex: none;
+    padding: 1px 5px;
+    border-radius: var(--radius-xs);
+    color: var(--muted);
+    background: var(--surface-soft);
+    font-size: 10px;
+    font-weight: 500;
 }
 
 .task-row-status {
@@ -1549,7 +1651,7 @@ dd {
 
 .task-row-time {
     flex: none;
-    color: var(--ink);
+    color: var(--muted);
     font-variant-numeric: lining-nums tabular-nums;
     font-feature-settings: "lnum" 1, "tnum" 1;
 }
@@ -1659,7 +1761,7 @@ dd {
     min-height: 38px;
     padding: 0 12px;
     border: 1px solid var(--line-strong);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-pill);
     color: var(--ink);
     background: var(--surface);
     font-size: 12px;
@@ -1854,20 +1956,6 @@ dd {
     to {
         opacity: 1;
         transform: scale(1) translateY(0);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .dialog-backdrop,
-    .dialog {
-        animation: none;
-    }
-
-    /* 进度条 sheen / busy 动画在 reduced-motion 下关闭 */
-    .progress-fill.is-running::after,
-    .progress-track.is-busy,
-    .tree-row.is-extracting {
-        animation: none !important;
     }
 }
 
@@ -2120,6 +2208,28 @@ dd {
     white-space: nowrap;
 }
 
+/* 轻量工具只在悬停和键盘聚焦时出现底色，不伪装成主要内容按钮。 */
+.tool-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 32px;
+    padding: 0 7px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    background: transparent;
+    font-size: 12px;
+}
+
+.tool-icon-button:hover:not(:disabled),
+.tool-icon-button:focus-visible {
+    color: var(--accent);
+    background: var(--accent-soft);
+    outline: none;
+}
+
 .password-manager-controls {
     display: grid;
     align-content: start;
@@ -2236,485 +2346,6 @@ dd {
     justify-content: flex-end;
     border-top: 1px solid var(--line);
     border-bottom: 0;
-}
-
-@media (max-width: 860px) {
-    .work-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .job-bar {
-        grid-template-columns: 1fr;
-    }
-
-    .job-actions {
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
-
-    .file-panel {
-        order: 0;
-    }
-
-    .settings-panel {
-        order: 1;
-    }
-
-    .file-tree,
-    .thumb-wall {
-        height: clamp(260px, 46vh, 440px);
-        height: clamp(260px, 46dvh, 440px);
-    }
-}
-
-@media (max-width: 1050px) {
-    :root {
-        --tree-cols: 26px 20px 20px 18px minmax(0, 1fr) 92px 72px 22px;
-    }
-
-    .tree-col-type {
-        display: none;
-    }
-
-    .tree-type {
-        display: none;
-    }
-
-    .tree-size {
-        min-width: 72px;
-    }
-}
-
-@media (max-width: 680px) {
-    .app-shell {
-        padding: 13px 13px calc(13px + env(safe-area-inset-bottom, 0px));
-    }
-
-    .app-header,
-    .archive-summary,
-    .job-bar {
-        grid-template-columns: 1fr;
-    }
-
-    .app-header {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .status-badge {
-        width: 100%;
-    }
-
-    .archive-summary {
-        display: grid;
-        grid-template-columns: 44px minmax(0, 1fr);
-        gap: 8px;
-        padding: 12px 14px;
-    }
-
-    .archive-type {
-        width: 44px;
-        height: 44px;
-        font-size: 12px;
-    }
-
-    .archive-metrics {
-        grid-template-columns: repeat(3, 1fr);
-        grid-column: 1 / -1;
-    }
-
-    .archive-metrics div {
-        min-width: 0;
-        padding: 5px 8px;
-        border-top: 1px solid var(--line);
-        border-left: 0;
-    }
-
-    /* 窄屏下压缩包卡片更紧凑：标题/路径/提示都略缩 */
-    .archive-copy h2 {
-        font-size: 15px;
-        margin: 2px 0 3px;
-    }
-
-    .path-text {
-        font-size: 11px;
-    }
-
-    .tree-toolbar {
-        flex-wrap: wrap;
-    }
-
-    /* 窄屏：搜索框独占一行，避免与视图切换挤在一行导致 placeholder 被裁 */
-    .search-field {
-        order: 5;
-        flex: 1 1 100%;
-        margin-left: 0;
-        width: 100%;
-    }
-
-    :root {
-        --tree-cols: 25px 19px 18px auto minmax(0, 1fr) 72px 22px;
-    }
-
-    .tree-column-header {
-        padding-right: 18px;
-    }
-
-    .tree-col-modified,
-    .tree-col-type {
-        display: none;
-    }
-
-    .tree-modified,
-    .tree-type {
-        display: none;
-    }
-
-    .job-bar {
-        position: fixed;
-        right: 13px;
-        bottom: calc(13px + env(safe-area-inset-bottom, 0px));
-        left: 13px;
-        z-index: 40;
-        gap: 12px;
-        margin: 0;
-        padding: 12px;
-        box-shadow: 0 8px 32px rgba(18, 31, 36, 0.2);
-    }
-
-    .job-actions,
-    .job-actions button {
-        width: 100%;
-    }
-
-    .job-actions {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-    }
-
-    .job-actions .job-option {
-        grid-column: 1 / -1;
-        order: -2;
-        width: 100%;
-        min-height: 44px;
-        padding: 8px 10px;
-    }
-
-    .job-bar:not(.is-job-active) .job-actions #extractBtn {
-        grid-column: 1 / -1;
-        order: -1;
-    }
-
-    .job-bar:not(.has-job-state) .progress-track,
-    .job-bar:not(.has-job-state) .job-copy p {
-        display: none;
-    }
-
-    .job-bar .job-line {
-        margin-bottom: 0;
-    }
-
-    .job-bar.has-job-state .progress-track {
-        margin-top: 8px;
-    }
-
-    .job-bar .progress-eta {
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .notice-row {
-        flex-direction: column;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    /* 窄屏：notice 独占整行，必须允许收缩并换行，否则长句右侧被裁 */
-    .notice {
-        flex: none;
-        display: block;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .notice-row > button {
-        width: 100%;
-    }
-
-    /* 窄屏：主题按钮只留图标，文字隐藏，避免「深色/浅色」两字竖排 */
-    .theme-toggle {
-        flex-shrink: 0;
-        padding: 0 10px;
-    }
-
-    .theme-toggle .theme-label {
-        display: none;
-    }
-
-    /* 状态徽标一行展示，过长时省略号而不是挤爆布局 */
-    .status-badge {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .password-manager-summary {
-        grid-template-columns: 1fr;
-        height: auto;
-        min-height: 46px;
-    }
-
-    .password-manager-summary .secondary-button {
-        width: 100%;
-    }
-
-    .password-prompt-actions {
-        display: grid;
-        grid-template-columns: 1fr;
-    }
-
-    .password-prompt-actions > button {
-        width: 100%;
-    }
-
-    .password-prompt-actions > div {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .password-manager-body {
-        grid-template-columns: 1fr;
-    }
-
-    .password-manager-controls {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .dialog-backdrop {
-        align-items: end;
-        padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
-    }
-
-    .dialog {
-        width: 100%;
-        max-width: none;
-        max-height: calc(100dvh - 24px - env(safe-area-inset-bottom, 0px));
-        border-radius: var(--radius-lg);
-    }
-
-    .dialog-head,
-    .dialog-actions,
-    .directory-toolbar {
-        flex-shrink: 0;
-    }
-
-    .password-manager-dialog,
-    .task-center-dialog {
-        display: flex;
-    }
-
-    .password-manager-body,
-    .task-center-list {
-        flex: 0 1 auto;
-        overflow: auto;
-    }
-
-    .password-record-list {
-        max-height: min(42dvh, 320px);
-    }
-
-    .directory-tree,
-    .diagnostics-content,
-    .comment-body,
-    .password-prompt-body,
-    .password-record-body,
-    .permission-dialog-body,
-    .solid-confirm-body {
-        min-height: 0;
-        overflow-y: auto;
-    }
-
-    .directory-toolbar,
-    .dialog-actions {
-        flex-wrap: wrap;
-    }
-
-    .dialog-actions > button,
-    .directory-toolbar > button {
-        min-height: 44px;
-    }
-
-    .preview-close,
-    .dialog-close {
-        width: 44px;
-        min-height: 44px;
-    }
-}
-
-/* Touch targets must remain visible without hover. Desktop keeps its dense tree. */
-@media (pointer: coarse), (max-width: 680px) {
-    .tree-row .tree-preview-btn {
-        width: 44px;
-        min-width: 44px;
-        height: 44px;
-        opacity: 1;
-    }
-
-    .tree-row-action {
-        width: 44px;
-        height: 44px;
-    }
-
-    .tree-row {
-        min-height: 44px;
-    }
-
-    .tree-tool-btn,
-    .view-switch-btn,
-    .icon-text-button,
-    .primary-button,
-    .secondary-button,
-    .danger-button,
-    #openPasswordManagerBtn,
-    .settings-panel .directory-picker-summary .secondary-button,
-    .directory-node-toggle,
-    .directory-node-label {
-        min-height: 44px;
-    }
-
-    .tree-search-clear {
-        right: 0;
-        width: 40px;
-        height: 40px;
-    }
-
-    .search-field input {
-        min-height: 44px;
-        padding-right: 40px;
-    }
-
-    .check-control {
-        min-height: 44px;
-    }
-
-    .directory-node-row {
-        min-height: 44px;
-    }
-
-    .password-record-row,
-    .password-preset-option {
-        min-height: 44px;
-    }
-}
-
-@media (max-width: 680px) {
-    :root {
-        --tree-cols: 22px 18px 18px auto minmax(0, 1fr) 64px 44px;
-    }
-
-    .tree-column-header {
-        display: none;
-    }
-
-    .tree-toolbar {
-        gap: 6px;
-        padding: 6px 10px;
-    }
-
-    .tree-tools,
-    .view-switch {
-        gap: 4px;
-    }
-
-    .tree-tool-btn,
-    .view-switch-btn {
-        padding-right: 7px;
-        padding-left: 7px;
-    }
-
-    .file-tree {
-        padding: 5px 6px 10px;
-    }
-
-    .tree-row {
-        gap: 4px;
-        padding-right: 4px;
-        padding-left: calc(4px + var(--tree-depth, 0) * 14px);
-    }
-
-    .tree-size {
-        min-width: 64px;
-    }
-
-    .tree-preview-btn {
-        color: var(--accent);
-    }
-
-    .app-header {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 12px;
-    }
-
-    .header-right {
-        display: grid;
-        grid-template-columns: auto auto minmax(0, 1fr);
-        gap: 8px;
-    }
-
-    .status-badge {
-        min-width: 0;
-        min-height: 44px;
-    }
-
-    .header-right .task-center-btn,
-    .header-right .theme-toggle {
-        min-height: 44px;
-    }
-}
-
-@media (max-width: 390px) {
-    .tree-toolbar > .check-control {
-        display: none;
-    }
-
-    .tree-tools,
-    .view-switch {
-        flex: 1;
-    }
-
-    .view-switch {
-        min-width: 0;
-    }
-
-    .tree-tool-btn,
-    .view-switch-btn {
-        flex: 1;
-        justify-content: center;
-    }
-
-    .tree-size {
-        min-width: 58px;
-        font-size: 10px;
-    }
-
-    .tree-size-unit {
-        margin-left: 1px;
-        font-size: 9px;
-    }
-}
-
-@media (max-width: 380px) {
-    .view-switch-btn span {
-        display: none;
-    }
-
-    .view-switch-btn {
-        min-width: 44px;
-    }
 }
 
 /* ===== Theme Toggle ===== */
@@ -3011,16 +2642,20 @@ dd {
     display: inline-flex;
     gap: 4px;
     flex-shrink: 0;
+    padding: 3px;
+    border-radius: var(--radius-md);
+    background: var(--track);
 }
 
 .view-switch-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 10px;
-    border: 1px solid var(--line);
+    min-height: 26px;
+    padding: 3px 9px;
+    border: 1px solid transparent;
     border-radius: var(--radius-sm);
-    background: var(--control-bg);
+    background: transparent;
     color: var(--muted);
     font-size: 12px;
     cursor: pointer;
@@ -3039,9 +2674,10 @@ dd {
 }
 
 .view-switch-btn.is-active {
-    background: var(--accent-soft);
-    border-color: var(--accent);
+    background: var(--surface);
+    border-color: var(--line);
     color: var(--accent);
+    box-shadow: 0 1px 3px rgba(18, 31, 36, 0.08);
 }
 
 .view-switch-btn:disabled {
@@ -3054,8 +2690,8 @@ dd {
     grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
     gap: 10px;
     padding: 12px;
-    height: clamp(280px, 48vh, 520px);
-    height: clamp(280px, 48dvh, 520px);
+    flex: 1;
+    min-height: 0;
     overflow: auto;
     overscroll-behavior-y: auto;
     align-content: start;
@@ -3410,8 +3046,365 @@ textarea:focus {
     background: var(--muted);
 }
 
-/* Must stay last: preview's base declarations appear above this section. */
+/* Responsive overrides live after every base component to prevent accidental
+   regressions from later button, tree or preview declarations. */
+@media (max-width: 1050px) {
+    :root {
+        --tree-cols: 26px 20px 20px 18px minmax(0, 1fr) 92px 72px 22px;
+    }
+
+    .tree-col-type,
+    .tree-type,
+    .tree-skeleton-type {
+        display: none;
+    }
+
+    .tree-size {
+        min-width: 72px;
+    }
+}
+
+@media (max-width: 860px) {
+    .work-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .file-panel {
+        order: 0;
+        height: auto;
+    }
+
+    .settings-panel {
+        order: 1;
+        height: auto;
+        max-height: none;
+    }
+
+    .settings-scroll {
+        overflow: visible;
+        scrollbar-gutter: auto;
+    }
+
+    .file-tree,
+    .thumb-wall {
+        flex: none;
+        height: clamp(260px, 46dvh, 440px);
+    }
+
+    .job-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .job-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+}
+
 @media (max-width: 680px) {
+    :root {
+        --tree-cols: 22px 18px 18px auto minmax(0, 1fr) 64px 44px;
+    }
+
+    .app-shell {
+        padding: 13px 13px calc(112px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .app-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .archive-summary,
+    .job-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .header-right {
+        display: grid;
+        grid-template-columns: auto auto minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .status-badge {
+        width: 100%;
+        min-width: 0;
+        min-height: 44px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .archive-summary {
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        gap: 8px;
+        padding: 12px 14px;
+    }
+
+    .archive-type {
+        width: 44px;
+        height: 44px;
+        font-size: 12px;
+    }
+
+    .archive-copy h2 {
+        margin: 2px 0 3px;
+        font-size: 15px;
+    }
+
+    .archive-metrics {
+        grid-template-columns: repeat(3, 1fr);
+        grid-column: 1 / -1;
+    }
+
+    .archive-metrics div {
+        min-width: 0;
+        padding: 5px 8px;
+        border-top: 1px solid var(--line);
+        border-left: 0;
+    }
+
+    .path-text {
+        font-size: 11px;
+    }
+
+    .tree-toolbar {
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 6px 10px;
+    }
+
+    .search-field {
+        order: 5;
+        flex: 1 1 100%;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .tree-column-header,
+    .tree-col-modified,
+    .tree-col-type,
+    .tree-modified,
+    .tree-type,
+    .tree-skeleton-modified,
+    .tree-skeleton-type {
+        display: none;
+    }
+
+    .file-tree {
+        padding: 5px 6px 10px;
+    }
+
+    .tree-row,
+    .tree-skeleton-row {
+        gap: 4px;
+        padding-right: 4px;
+        padding-left: 4px;
+    }
+
+    .tree-row {
+        padding-left: calc(4px + var(--tree-depth, 0) * 14px);
+    }
+
+    .tree-tools,
+    .view-switch {
+        gap: 4px;
+    }
+
+    .tree-tool-btn,
+    .view-switch-btn {
+        padding-right: 7px;
+        padding-left: 7px;
+    }
+
+    .tree-size {
+        min-width: 64px;
+    }
+
+    .tree-preview-btn {
+        color: var(--accent);
+    }
+
+    .job-bar {
+        position: fixed;
+        right: 13px;
+        bottom: calc(13px + env(safe-area-inset-bottom, 0px));
+        left: 13px;
+        z-index: 40;
+        width: auto;
+        gap: 12px;
+        margin: 0;
+        padding: 12px;
+        transform: none;
+        border-color: var(--line-strong);
+        box-shadow: 0 8px 32px rgba(18, 31, 36, 0.2);
+    }
+
+    .job-actions,
+    .job-actions button {
+        width: 100%;
+    }
+
+    .job-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .job-actions .job-option {
+        grid-column: 1 / -1;
+        order: -2;
+        width: 100%;
+        min-height: 44px;
+        padding: 8px 10px;
+    }
+
+    .job-bar:not(.is-job-active) .job-actions #extractBtn {
+        order: -1;
+    }
+
+    .job-bar:not(.is-job-active) .job-actions #testBtn {
+        order: 0;
+    }
+
+    .job-bar:not(.has-job-state) .progress-track,
+    .job-bar:not(.has-job-state) .job-copy p {
+        display: none;
+    }
+
+    .job-bar .job-line {
+        margin-bottom: 0;
+    }
+
+    .job-bar.has-job-state .progress-track {
+        margin-top: 8px;
+    }
+
+    .job-bar .progress-eta {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .notice-row {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .notice {
+        flex: none;
+        display: block;
+        width: 100%;
+    }
+
+    .notice-row > button {
+        width: 100%;
+    }
+
+    .theme-toggle {
+        flex-shrink: 0;
+        min-height: 44px;
+        padding: 0 10px;
+    }
+
+    .theme-toggle .theme-label {
+        display: none;
+    }
+
+    .header-right .task-center-btn {
+        min-height: 44px;
+    }
+
+    .password-manager-summary {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 46px;
+    }
+
+    .password-manager-summary .secondary-button {
+        width: 100%;
+    }
+
+    .password-prompt-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .password-prompt-actions > button {
+        width: 100%;
+    }
+
+    .password-prompt-actions > div {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .password-manager-body {
+        grid-template-columns: 1fr;
+    }
+
+    .password-manager-controls {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .dialog-backdrop {
+        align-items: flex-end;
+        padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .dialog {
+        width: 100%;
+        max-width: none;
+        max-height: calc(100dvh - 24px - env(safe-area-inset-bottom, 0px));
+        border-radius: var(--radius-lg);
+    }
+
+    .dialog-head,
+    .dialog-actions,
+    .directory-toolbar {
+        flex-shrink: 0;
+    }
+
+    .password-manager-dialog,
+    .task-center-dialog {
+        display: flex;
+    }
+
+    .password-manager-body,
+    .task-center-list {
+        flex: 0 1 auto;
+        overflow: auto;
+    }
+
+    .password-record-list {
+        max-height: min(42dvh, 320px);
+    }
+
+    .directory-tree,
+    .diagnostics-content,
+    .comment-body,
+    .password-prompt-body,
+    .password-record-body,
+    .permission-dialog-body,
+    .solid-confirm-body {
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .directory-toolbar,
+    .dialog-actions {
+        flex-wrap: wrap;
+    }
+
+    .dialog-actions > button,
+    .directory-toolbar > button {
+        min-height: 44px;
+    }
+
     .preview-backdrop {
         align-items: flex-end;
         padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
@@ -3452,6 +3445,105 @@ textarea:focus {
         word-break: normal;
         font-size: 12px;
     }
+
+    .preview-close,
+    .dialog-close {
+        width: 44px;
+        min-height: 44px;
+    }
+}
+
+/* Touch targets stay visible without hover and win over compact .btn-sm. */
+@media (pointer: coarse), (max-width: 680px) {
+    .tree-row .tree-preview-btn {
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        opacity: 1;
+    }
+
+    .tree-row-action {
+        width: 44px;
+        height: 44px;
+    }
+
+    .tree-row,
+    .tree-skeleton-row {
+        min-height: 44px;
+    }
+
+    .tree-tool-btn,
+    .view-switch-btn,
+    .icon-text-button,
+    .tool-icon-button,
+    .primary-button,
+    .secondary-button,
+    .danger-button,
+    #openPasswordManagerBtn,
+    .settings-panel .directory-picker-summary .secondary-button,
+    .directory-node-toggle,
+    .directory-node-label {
+        min-height: 44px;
+    }
+
+    .tree-search-clear {
+        right: 0;
+        width: 40px;
+        height: 40px;
+    }
+
+    .search-field input {
+        min-height: 44px;
+        padding-right: 40px;
+    }
+
+    .check-control,
+    .directory-node-row,
+    .password-record-row,
+    .password-preset-option {
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 390px) {
+    .tree-toolbar > .check-control {
+        display: none;
+    }
+
+    .tree-tools,
+    .view-switch {
+        flex: 1;
+    }
+
+    .view-switch {
+        min-width: 0;
+    }
+
+    .tree-tool-btn,
+    .view-switch-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .tree-size {
+        min-width: 58px;
+        font-size: 11px;
+    }
+
+    .tree-size-unit {
+        margin-left: 1px;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 380px) {
+    .view-switch-btn span {
+        display: none;
+    }
+
+    .view-switch-btn {
+        min-width: 44px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3460,6 +3552,13 @@ textarea:focus {
     .dialog-backdrop,
     .dialog {
         animation: none;
+    }
+
+    .progress-fill.is-running::after,
+    .progress-track.is-busy,
+    .tree-row.is-extracting,
+    .tree-skeleton-row > span {
+        animation: none !important;
     }
 
     button:not(:disabled) {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CHzip - 飞牛智能分卷解压</title>
-    <link rel="stylesheet" href="./index.cgi/css/style.css?v=4.6">
+    <link rel="stylesheet" href="./index.cgi/css/style.css?v=4.7">
 </head>
 <body>
     <svg class="icon-defs" aria-hidden="true" focusable="false" width="0" height="0">
@@ -23,9 +23,9 @@
         <div class="workspace">
             <header class="app-header">
                 <div class="brand">
-                    <img class="brand-icon" src="./index.cgi/images/icon_64.png?v=4.6" alt="">
+                    <img class="brand-icon" src="./index.cgi/images/icon_64.png?v=4.7" alt="">
                     <div>
-                        <h1>CHzip<span class="brand-version">v4.6</span></h1>
+                        <h1>CHzip<span class="brand-version">v4.7</span></h1>
                         <p>飞牛智能分卷解压</p>
                     </div>
                 </div>
@@ -129,7 +129,7 @@
                             <h3 id="fileTreeTitle">压缩包内容</h3>
                             <p id="selectionSummary">等待预览</p>
                         </div>
-                        <button id="refreshPreviewBtn" class="secondary-button icon-text-button btn-sm" type="button" title="重新扫描并读取压缩包内容">
+                        <button id="refreshPreviewBtn" class="tool-icon-button" type="button" title="重新扫描并读取压缩包内容" aria-label="重新预览">
                             <svg class="btn-icon" viewBox="0 0 16 16" focusable="false" aria-hidden="true"><path d="M13.6 8A5.6 5.6 0 1 1 8 2.4a5.55 5.55 0 0 1 3.9 1.6L13.5 2v4.5H9l1.9-1.9A4.35 4.35 0 0 0 8 3.6a4.4 4.4 0 1 0 4.4 4.4h1.2Z" fill="currentColor"/></svg>
                             <span>重新预览</span>
                         </button>
@@ -200,92 +200,93 @@
                         </div>
                     </div>
 
-                    <div class="settings-form">
-                        <div class="field password-manager-field" role="group" aria-labelledby="passwordManagerFieldLabel">
-                            <span id="passwordManagerFieldLabel">密码管理器</span>
-                            <div class="password-manager-summary">
-                                <div>
-                                    <strong id="passwordManagerStatus">未检测到加密</strong>
-                                    <small>选择、修改或保存解压密码</small>
-                                </div>
-                                <button id="openPasswordManagerBtn" class="secondary-button icon-text-button btn-sm" type="button">
-                                    <svg class="btn-icon" viewBox="0 0 16 16" focusable="false" aria-hidden="true"><path d="M11 2.5a2.5 2.5 0 0 0-2.3 3.5L3 11.7V13.5h1.8v-1.2h1.2v-1.2h1.2l1.3-1.3A2.5 2.5 0 1 0 11 2.5Zm0 1.2a1.3 1.3 0 1 1-1.3 1.3A1.3 1.3 0 0 1 11 3.7Z" fill="currentColor"/></svg>
-                                    <span>密码管理</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="field directory-picker-field" role="group" aria-labelledby="directoryPickerFieldLabel">
-                            <span id="directoryPickerFieldLabel">选择解压路径</span>
-                            <div class="directory-picker-summary">
-                                <div id="selectedDirectoryPath" title="-">-</div>
-                                <button id="openDirectoryPickerBtn" class="secondary-button icon-text-button btn-sm" type="button" disabled>
-                                    <svg class="btn-icon" viewBox="0 0 16 16" focusable="false" aria-hidden="true"><path d="M2.5 3.5h3.6l1.2 1.5h6.2v7.5h-11Z" fill="currentColor"/></svg>
-                                    <span>浏览...</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="field" role="group" aria-labelledby="outputPreviewFieldLabel">
-                            <span id="outputPreviewFieldLabel">输出位置预览</span>
-                            <div id="outputPreview" class="output-preview">-</div>
-                            <small class="field-hint">
-                                同名文件冲突策略的说明
-                                <button type="button" class="field-hint-toggle"
-                                    aria-label="查看冲突策略说明"
-                                    title="自动重命名会创建新目录；覆盖、跳过和保留较新会复用同名目录处理已有文件。默认开启的自动拍平也可能调整输出目录中的同名单层结构。">?</button>
-                            </small>
-                        </div>
-
-                        <details class="volume-details">
-                            <summary>已识别分卷 <span id="volumeCount">0</span></summary>
-                            <div id="volumeList" class="volume-list"></div>
-                        </details>
-
-                        <details class="advanced-options">
-                            <summary>高级选项</summary>
-                            <div class="advanced-options-body">
-                                <div class="field comment-field" role="group" aria-labelledby="commentFieldLabel">
-                                    <span id="commentFieldLabel">压缩包注释</span>
-                                    <div class="comment-summary">
-                                        <div id="commentStatus" class="comment-status">无注释</div>
-                                        <button id="openCommentBtn" class="secondary-button icon-text-button btn-sm" type="button">
-                                            <svg class="btn-icon" viewBox="0 0 16 16" focusable="false" aria-hidden="true"><path d="M3 3h10v7H5.5L3 12.5V3Z" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round"/></svg>
-                                            <span>查看/编辑</span>
-                                        </button>
+                    <div class="settings-scroll">
+                        <div class="settings-form">
+                            <div class="field password-manager-field" role="group" aria-labelledby="passwordManagerFieldLabel">
+                                <span id="passwordManagerFieldLabel">密码管理器</span>
+                                <div class="password-manager-summary">
+                                    <div>
+                                        <strong id="passwordManagerStatus">未检测到加密</strong>
+                                        <small>选择、修改或保存解压密码</small>
                                     </div>
+                                    <button id="openPasswordManagerBtn" class="secondary-button icon-text-button btn-sm" type="button">
+                                        <svg class="btn-icon" viewBox="0 0 16 16" focusable="false" aria-hidden="true"><path d="M11 2.5a2.5 2.5 0 0 0-2.3 3.5L3 11.7V13.5h1.8v-1.2h1.2v-1.2h1.2l1.3-1.3A2.5 2.5 0 1 0 11 2.5Zm0 1.2a1.3 1.3 0 1 1-1.3 1.3A1.3 1.3 0 0 1 11 3.7Z" fill="currentColor"/></svg>
+                                        <span>密码管理</span>
+                                    </button>
                                 </div>
-
-                                <label class="field code-page-field">
-                                    <span>文件名代码页</span>
-                                    <select id="codePageSelect">
-                                        <option value="auto">默认（自动识别）</option>
-                                        <option value="utf8">UTF-8</option>
-                                        <option value="gbk">简体中文（GBK / 936）</option>
-                                        <option value="big5">繁体中文（Big5 / 950）</option>
-                                        <option value="shift_jis">日文（Shift-JIS / 932）</option>
-                                        <option value="korean">韩文（949）</option>
-                                    </select>
-                                </label>
-
-                                <label class="field conflict-policy-field">
-                                    <span>同名文件冲突时</span>
-                                    <select id="conflictPolicySelect">
-                                        <option value="rename">自动重命名（新目录）</option>
-                                        <option value="overwrite">覆盖已存在文件</option>
-                                        <option value="skip">跳过已存在文件</option>
-                                        <option value="keepnew">保留较新文件</option>
-                                    </select>
-                                </label>
-
-                                <label class="check-control auto-flatten-control"
-                                    title="解压完成后，如果输出目录只包含一个与压缩包同名的文件夹，则自动移除这层外壳">
-                                    <input id="autoFlattenInput" type="checkbox" checked>
-                                    <span>自动拍平同名一层目录</span>
-                                </label>
                             </div>
-                        </details>
 
+                            <div class="field directory-picker-field" role="group" aria-labelledby="directoryPickerFieldLabel">
+                                <span id="directoryPickerFieldLabel">选择解压路径</span>
+                                <div class="directory-picker-summary">
+                                    <div id="selectedDirectoryPath" title="-">-</div>
+                                    <button id="openDirectoryPickerBtn" class="secondary-button icon-text-button btn-sm" type="button" disabled>
+                                        <svg class="btn-icon" viewBox="0 0 16 16" focusable="false" aria-hidden="true"><path d="M2.5 3.5h3.6l1.2 1.5h6.2v7.5h-11Z" fill="currentColor"/></svg>
+                                        <span>浏览...</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="field" role="group" aria-labelledby="outputPreviewFieldLabel">
+                                <span id="outputPreviewFieldLabel">输出位置预览</span>
+                                <div id="outputPreview" class="output-preview">-</div>
+                                <small class="field-hint">
+                                    同名文件冲突策略的说明
+                                    <button type="button" class="field-hint-toggle"
+                                        aria-label="查看冲突策略说明"
+                                        title="自动重命名会创建新目录；覆盖、跳过和保留较新会复用同名目录处理已有文件。默认开启的自动拍平也可能调整输出目录中的同名单层结构。">?</button>
+                                </small>
+                            </div>
+
+                            <details id="volumeDetails" class="volume-details">
+                                <summary>已识别分卷 <span id="volumeCount">0</span></summary>
+                                <div id="volumeList" class="volume-list"></div>
+                            </details>
+
+                            <details class="advanced-options">
+                                <summary>高级选项</summary>
+                                <div class="advanced-options-body">
+                                    <div class="field comment-field" role="group" aria-labelledby="commentFieldLabel">
+                                        <span id="commentFieldLabel">压缩包注释</span>
+                                        <div class="comment-summary">
+                                            <div id="commentStatus" class="comment-status">无注释</div>
+                                            <button id="openCommentBtn" class="secondary-button icon-text-button btn-sm" type="button">
+                                                <svg class="btn-icon" viewBox="0 0 16 16" focusable="false" aria-hidden="true"><path d="M3 3h10v7H5.5L3 12.5V3Z" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round"/></svg>
+                                                <span>查看/编辑</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <label class="field code-page-field">
+                                        <span>文件名代码页</span>
+                                        <select id="codePageSelect">
+                                            <option value="auto">默认（自动识别）</option>
+                                            <option value="utf8">UTF-8</option>
+                                            <option value="gbk">简体中文（GBK / 936）</option>
+                                            <option value="big5">繁体中文（Big5 / 950）</option>
+                                            <option value="shift_jis">日文（Shift-JIS / 932）</option>
+                                            <option value="korean">韩文（949）</option>
+                                        </select>
+                                    </label>
+
+                                    <label class="field conflict-policy-field">
+                                        <span>同名文件冲突时</span>
+                                        <select id="conflictPolicySelect">
+                                            <option value="rename">自动重命名（新目录）</option>
+                                            <option value="overwrite">覆盖已存在文件</option>
+                                            <option value="skip">跳过已存在文件</option>
+                                            <option value="keepnew">保留较新文件</option>
+                                        </select>
+                                    </label>
+
+                                    <label class="check-control auto-flatten-control"
+                                        title="解压完成后，如果输出目录只包含一个与压缩包同名的文件夹，则自动移除这层外壳">
+                                        <input id="autoFlattenInput" type="checkbox" checked>
+                                        <span>自动拍平同名一层目录</span>
+                                    </label>
+                                </div>
+                            </details>
+                        </div>
                     </div>
                 </aside>
             </section>
@@ -576,7 +577,7 @@
             <div id="historyList" class="task-center-list"></div>
             <div class="dialog-actions">
                 <button id="clearHistoryBtn" class="danger-button" type="button">清空记录</button>
-                <button id="closeHistoryConfirmBtn" class="primary-button" type="button">完成</button>
+                <button id="closeHistoryConfirmBtn" class="secondary-button" type="button">完成</button>
             </div>
         </div>
     </div>
@@ -604,19 +605,19 @@
         </div>
     </div>
 
-    <script defer src="./index.cgi/js/password-store.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/tree.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/api-client.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/ui-state.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/ui-tree.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/ui-dialogs.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/ui-jobs.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/ui-passwords.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/ui-preview.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/ui-thumbs.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/ui-theme.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/ui-comment.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/ui-focus.js?v=4.6"></script>
-    <script defer src="./index.cgi/js/app.js?v=4.6"></script>
+    <script defer src="./index.cgi/js/password-store.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/tree.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/api-client.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/ui-state.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/ui-tree.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/ui-dialogs.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/ui-jobs.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/ui-passwords.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/ui-preview.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/ui-thumbs.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/ui-theme.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/ui-comment.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/ui-focus.js?v=4.7"></script>
+    <script defer src="./index.cgi/js/app.js?v=4.7"></script>
 </body>
 </html>

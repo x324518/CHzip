@@ -206,6 +206,9 @@
         const els = state.elements;
         els.volumeList.replaceChildren();
         els.volumeCount.textContent = String(parts?.length || 0);
+        if (els.volumeDetails) {
+            els.volumeDetails.open = Boolean(parts?.length);
+        }
         for (const part of parts || []) {
             const item = document.createElement("div");
             item.className = "volume-item";

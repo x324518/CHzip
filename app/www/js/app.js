@@ -52,6 +52,7 @@
     uiJobs.initJobBarLayout(state);
     uiTree.enableVerticalWheelChaining(els.fileTree);
     uiTree.enableVerticalWheelChaining(els.thumbWall);
+    uiTree.enableVerticalWheelChaining(els.settingsScroll);
     uiTree.enableVerticalWheelChaining(els.volumeList);
 
     const searchScheduler = treeApi.createSearchScheduler({ delay: 180 });
@@ -153,7 +154,7 @@
             state.previewLimited = false;
             state.passwordRequired = false;
             state.passwordVerified = true;
-            els.fileTree.innerHTML = '<div class="tree-empty">正在生成文件树...</div>';
+            uiTree.renderTree(state, treeApi);
             // F11：换包/刷新时，若缩略图墙还活着，先停掉观察器与队列。
             // 保留 LRU 缓存（挂在 controller 上），新包路径不同不会命中旧缓存，
             // 但 dispose 只是停观察器，缓存随 controller 一起被 GC。

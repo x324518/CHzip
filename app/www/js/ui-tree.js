@@ -728,6 +728,37 @@
         return "尚未载入压缩包目录";
     }
 
+    // 扫描期间保留列表的结构和行高，避免正文从一段提示突然跳成文件树。
+    function appendTreeSkeleton(container) {
+        const skeleton = document.createElement("div");
+        skeleton.className = "tree-skeleton";
+        skeleton.setAttribute("aria-hidden", "true");
+        const nameWidths = [62, 46, 72, 54, 66, 42, 58];
+        for (let index = 0; index < nameWidths.length; index += 1) {
+            const row = document.createElement("div");
+            row.className = "tree-skeleton-row";
+            const toggle = document.createElement("span");
+            toggle.className = "tree-skeleton-toggle";
+            const checkbox = document.createElement("span");
+            checkbox.className = "tree-skeleton-checkbox";
+            const icon = document.createElement("span");
+            icon.className = "tree-skeleton-icon";
+            const lock = document.createElement("span");
+            const name = document.createElement("span");
+            name.className = "tree-skeleton-name";
+            name.style.setProperty("--skeleton-width", `${nameWidths[index]}%`);
+            const modified = document.createElement("span");
+            modified.className = "tree-skeleton-modified";
+            const type = document.createElement("span");
+            type.className = "tree-skeleton-type";
+            const size = document.createElement("span");
+            size.className = "tree-skeleton-size";
+            row.append(toggle, checkbox, icon, lock, name, modified, type, size);
+            skeleton.append(row);
+        }
+        container.append(skeleton);
+    }
+
     function renderTree(state, treeApi, options = {}) {
         const els = state.elements;
         const query = els.treeSearchInput?.value.trim() || "";
@@ -752,14 +783,21 @@
         ensureDelegatedHandlers(els.fileTree);
         els.fileTree.replaceChildren();
         if (!state.previewReady && !state.previewLimited) {
-            const empty = document.createElement("div");
-            empty.className = "tree-empty";
-            empty.textContent = emptyTreeText(state);
-            els.fileTree.append(empty);
+            if (state.previewing && state.filePath && !state.previewReady) {
+                appendTreeSkeleton(els.fileTree);
+                els.fileTree.setAttribute("aria-busy", "true");
+            } else {
+                const empty = document.createElement("div");
+                empty.className = "tree-empty";
+                empty.textContent = emptyTreeText(state);
+                els.fileTree.append(empty);
+                els.fileTree.removeAttribute("aria-busy");
+            }
             updateSearchSummary(state, "", 0);
             updateSelectionSummary(state);
             return;
         }
+        els.fileTree.removeAttribute("aria-busy");
         if (state.previewLimited) {
             const empty = document.createElement("div");
             empty.className = "tree-empty";

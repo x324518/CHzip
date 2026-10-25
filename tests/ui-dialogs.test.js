@@ -71,6 +71,7 @@ test("engine status is concise and keeps details in the tooltip", () => {
         warningList: {},
         volumeList: { replaceChildren() {} },
         volumeCount: {},
+        volumeDetails: { open: false },
         toolStatus: {},
         selectedDirectoryPath: {},
         outputPreview: {},
@@ -90,4 +91,62 @@ test("engine status is concise and keeps details in the tooltip", () => {
     assert.equal(elements.toolStatus.textContent, "引擎就绪");
     assert.match(elements.toolStatus.title, /bundled/);
     assert.equal(elements.filePath.title, "/vol1/share/a.zip");
+});
+
+test("recognized volumes default to expanded and empty volumes stay closed", () => {
+    const elements = {
+        archiveType: {},
+        archiveTitle: {},
+        filePath: {},
+        partCount: {},
+        warningList: {},
+        volumeList: { replaceChildren() {}, append() {} },
+        volumeCount: {},
+        volumeDetails: { open: false },
+        toolStatus: {},
+        selectedDirectoryPath: {},
+        outputPreview: {},
+    };
+    const state = { elements, selectedDirectory: "" };
+    const originalDocument = globalThis.document;
+    globalThis.document = {
+        createElement: () => ({
+            append() {},
+            className: "",
+            textContent: "",
+            title: "",
+        }),
+    };
+    try {
+        DIALOGS.renderInfo({
+            filePath: "/vol1/share/a.7z.001",
+            fileName: "a.7z.001",
+            partCount: 2,
+            parts: [
+                { path: "/vol1/share/a.7z.001", name: "a.7z.001", size: 100 },
+                { path: "/vol1/share/a.7z.002", name: "a.7z.002", size: 100 },
+            ],
+            warnings: [],
+            tool: { source: "bundled", path: "/var/apps/CHzip/7zzs" },
+            selection: { format: "7z" },
+        }, state);
+        assert.equal(elements.volumeDetails.open, true);
+        assert.equal(elements.volumeCount.textContent, "2");
+
+        DIALOGS.renderInfo({
+            filePath: "/vol1/share/a.zip",
+            fileName: "a.zip",
+            parts: [],
+            warnings: [],
+            tool: { source: "bundled", path: "/var/apps/CHzip/7zzs" },
+            selection: { format: "zip" },
+        }, state);
+        assert.equal(elements.volumeDetails.open, false);
+    } finally {
+        if (originalDocument) {
+            globalThis.document = originalDocument;
+        } else {
+            delete globalThis.document;
+        }
+    }
 });

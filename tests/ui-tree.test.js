@@ -64,6 +64,9 @@ function createElementStub(tagName) {
     setAttribute(name, value) {
       element.attributes[name] = String(value);
     },
+    removeAttribute(name) {
+      delete element.attributes[name];
+    },
     getAttribute(name) {
       return element.attributes[name];
     },
@@ -322,6 +325,32 @@ test("renderTree shows the empty and limited placeholders", () => {
     fileTree.children[0].textContent,
     "压缩包内容超过预览限制，将按整包方式解压。",
   );
+});
+
+test("renderTree keeps a stable row skeleton only while scanning", () => {
+  const { renderTree } = globalThis.CHzipUiTree;
+  const scanning = createState({
+    filePath: "/tmp/a.7z",
+    previewing: true,
+    previewReady: false,
+  });
+  renderTree(scanning, globalThis.CHzipTree);
+
+  assert.equal(fileTree.getAttribute("aria-busy"), "true");
+  assert.equal(fileTree.children.length, 1);
+  assert.equal(fileTree.children[0].classList.contains("tree-skeleton"), true);
+  assert.equal(fileTree.children[0].children.length, 7);
+  assert.equal(
+    fileTree.children[0].children.every(
+      (row) => row.classList.contains("tree-skeleton-row"),
+    ),
+    true,
+  );
+
+  scanning.previewing = false;
+  renderTree(scanning, globalThis.CHzipTree);
+  assert.equal(fileTree.getAttribute("aria-busy"), undefined);
+  assert.equal(fileTree.children[0].textContent, "尚未载入压缩包目录");
 });
 
 test("renderTree adds a preview button only for previewable files", () => {

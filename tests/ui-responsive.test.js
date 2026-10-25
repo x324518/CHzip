@@ -107,3 +107,41 @@ test("header history control keeps the same pill treatment as the theme toggle",
     assert.match(rule, /min-height:\s*34px/);
     assert.match(rule, /border-radius:\s*var\(--radius-pill\)/);
 });
+
+test("desktop panels align while narrow layouts restore document flow", () => {
+    assert.match(css, /\.work-grid\s*\{[\s\S]*?--work-panel-height:/);
+    assert.match(css, /\.work-grid\s*\{[\s\S]*?align-items:\s*stretch/);
+    assert.match(css, /\.file-panel\s*\{[\s\S]*?height:\s*var\(--work-panel-height\)/);
+    assert.match(css, /\.settings-panel\s*\{[\s\S]*?height:\s*var\(--work-panel-height\)/);
+    assert.match(css, /\.settings-scroll\s*\{[\s\S]*?overflow-y:\s*auto/);
+    assert.match(css, /@media \(max-width: 860px\)[\s\S]*?\.settings-panel\s*\{[\s\S]*?height:\s*auto/);
+    assert.match(css, /@media \(max-width: 860px\)[\s\S]*?\.settings-panel\s*\{[\s\S]*?max-height:\s*none/);
+});
+
+test("tree metadata remains legible and reduced motion covers skeletons", () => {
+    assert.match(css, /--tree-meta:/);
+    assert.match(css, /\.tree-modified\s*\{[\s\S]*?font-size:\s*12px/);
+    assert.match(css, /\.tree-size\s*\{[\s\S]*?font-size:\s*12px/);
+    assert.match(css, /\.tree-skeleton-row\s*\{[\s\S]*?height:\s*32px/);
+    const reducedMotion = css.slice(css.lastIndexOf("@media (prefers-reduced-motion: reduce)"));
+    assert.match(reducedMotion, /\.tree-skeleton-row > span/);
+});
+
+test("responsive overrides follow all base button and preview declarations", () => {
+    const touch = css.indexOf("@media (pointer: coarse)");
+    const smallest = css.indexOf("@media (max-width: 380px)");
+    const reduced = css.lastIndexOf("@media (prefers-reduced-motion: reduce)");
+    assert.ok(touch > css.indexOf(".btn-sm {"));
+    assert.ok(touch > css.indexOf(".preview-header {"));
+    assert.ok(css.lastIndexOf("@media (max-width: 680px)") < touch);
+    assert.ok(smallest > touch);
+    assert.ok(reduced > smallest);
+});
+
+test("desktop keeps the action bar in place while mobile docks it", () => {
+    const baseStart = css.indexOf("\n.job-bar {", css.indexOf(".volume-item span:last-child"));
+    const baseEnd = css.indexOf(".job-line {", baseStart);
+    assert.match(css.slice(baseStart, baseEnd), /position:\s*static/);
+    assert.match(css, /@media \(max-width: 680px\)[\s\S]*?\.job-bar\s*\{[\s\S]*?position:\s*fixed/);
+    assert.match(css, /\.job-bar:not\(\.is-job-active\) #cancelBtn\s*\{[\s\S]*?display:\s*none/);
+});
