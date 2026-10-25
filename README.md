@@ -33,6 +33,8 @@
 | ![CHzip 本地密码管理器](docs/images/3.png) | ![CHzip 任务历史与解压结果](docs/images/4.png) |
 
 <div align="center">
+  <img src="docs/images/5.png" width="100%" alt="CHzip 顶部实时工作流" />
+  <p><sub>顶部实时工作流：当前任务保留在主操作栏，其他后台任务独立展示</sub></p>
   <img src="docs/images/mobile.png" width="320" alt="CHzip 移动端界面" />
   <p><sub>移动端：常显预览入口与底部固定解压操作</sub></p>
 </div>

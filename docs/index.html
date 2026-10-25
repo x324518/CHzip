@@ -1068,6 +1068,7 @@ footer .fl a:hover {
   <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="currentColor"/><path d="M8 1.2v1.8M8 13v1.8M14.8 8H13M3 8H1.2M12.9 3.1l-1.3 1.3M4.5 11.6l-1.3 1.3M12.9 12.9l-1.3-1.3M4.5 4.5 3.1 3.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
   <symbol id="i-gear" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5v2M8 12.5v2M14.5 8h-2M3.5 8h-2M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4M12.6 12.6l-1.4-1.4M4.8 4.8 3.4 3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
   <symbol id="i-clipboard" viewBox="0 0 16 16"><rect x="3" y="2.5" width="10" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="5.5" y="1" width="5" height="3" rx="1" fill="currentColor"/><path d="M5.5 7h5M5.5 9.5h5M5.5 12h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 16 16"><path d="M1.5 8h3l1.7-4.2 3.1 8.4 1.8-4.2h3.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-bulb" viewBox="0 0 16 16"><path d="M8 1.5a4.7 4.7 0 0 0-2.6 8.6c.5.4.9 1 .9 1.6h3.4c0-.6.4-1.2.9-1.6A4.7 4.7 0 0 0 8 1.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6.4 13.6h3.2M7 15h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
   <symbol id="i-warn" viewBox="0 0 16 16"><path d="M8 2 14.5 13.5h-13Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 6.5v3.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="11.7" r="0.9" fill="currentColor"/></symbol>
   <symbol id="i-rocket" viewBox="0 0 16 16"><path d="M9.5 2.5c2.4-.8 4-.4 4-.4s.4 1.6-.4 4c-.7 2.1-2.4 3.7-4.5 4.9L6.6 9.4C7.8 7.4 7.4 3.2 9.5 2.5Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="10" cy="6" r="1" fill="currentColor"/><path d="M6.2 9.8 4 10.4l-.6 2.2 2.2-.6.6-2.2ZM4.5 12.5 2.8 14.2" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -1211,13 +1212,14 @@ footer .fl a:hover {
   <section id="showcase">
     <div class="section-head">
       <h2>界面实测展示</h2>
-      <p class="lead">专为 fnOS 飞牛私有云量身定制的桌面交互体验，原生契合系统风格。</p>
+      <p class="lead">专为 fnOS 飞牛私有云量身定制的桌面交互体验，包含多任务实时工作流、文件预览与密码管理。</p>
     </div>
 
     <div class="gallery-card">
       <div class="gallery-nav" id="galleryNav" role="tablist" aria-label="界面截图切换">
         <button class="gallery-tab active" role="tab" aria-selected="true" aria-controls="galleryView" id="tab-dark" tabindex="0" data-img="images/1.webp" data-img-fallback="images/1.png" data-title="深色主题 —— 当前 v4.7 等高文件区与设置区、任务操作与分卷详情，信息层级更清晰"><svg><use href="#i-moon"/></svg> 深色主题</button>
         <button class="gallery-tab" role="tab" aria-selected="false" aria-controls="galleryView" id="tab-light" tabindex="-1" data-img="images/2.webp" data-img-fallback="images/2.png" data-title="浅色主题 —— 清爽高对比界面，文件类型、选中状态和操作层级一目了然"><svg><use href="#i-sun"/></svg> 浅色主题</button>
+        <button class="gallery-tab" role="tab" aria-selected="false" aria-controls="galleryView" id="tab-workflow" tabindex="-1" data-img="images/5.webp" data-img-fallback="images/5.png" data-title="顶部实时工作流 —— 当前任务进度保留在主操作栏，顶部只展示其他后台任务，并用平滑细线呈现进度"><svg><use href="#i-activity"/></svg> 实时工作流</button>
         <button class="gallery-tab" role="tab" aria-selected="false" aria-controls="galleryView" id="tab-settings" tabindex="-1" data-img="images/3.webp" data-img-fallback="images/3.png" data-title="本地密码管理器 —— 密码仅保存在当前浏览器，支持添加、编辑与删除"><svg><use href="#i-gear"/></svg> 密码与设置</button>
         <button class="gallery-tab" role="tab" aria-selected="false" aria-controls="galleryView" id="tab-progress" tabindex="-1" data-img="images/4.webp" data-img-fallback="images/4.png" data-title="任务历史与解压结果 —— 成功、体检、失败状态清晰区分，输出位置与清理结果可回溯"><svg><use href="#i-clipboard"/></svg> 任务历史</button>
       </div>
@@ -1864,7 +1866,11 @@ document.querySelectorAll('.faq-q').forEach((q) => {
           "文件工具与任务历史改为更轻量的视觉层级，保留原有操作与信息密度",
           "文件扫描加入稳定骨架行，减少目录加载时的布局跳动",
           "提高修改时间、类型与大小的可读性，统一响应式覆盖顺序与触控尺寸",
-          "桌面操作栏保留原位置，移动端继续底部吸附，补充回归测试至 519 项"
+          "没有传入压缩包时也可打开密码管理器并勾选删除源包，其余解压操作保持禁用",
+          "顶部实时工作流只显示其他后台任务，主任务改用单一 jobs 轮询并避免重复挂载任务行",
+          "顶部后台任务增加平滑进度线，降低刷新跳变并尊重 reduced-motion",
+          "桌面操作栏保留原位置，移动端继续底部吸附，补充回归测试至 524 项",
+          "介绍页重新截取当前界面，并新增顶部实时工作流展示"
         ]
       },
       {

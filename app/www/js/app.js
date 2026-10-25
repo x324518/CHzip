@@ -729,10 +729,10 @@
                 state.pollTimer.stop();
             }
             state.pollTimer = uiJobs.createPoller(() => uiJobs.pollStatus(state, api), {
-                interval: 1000,
+                interval: uiJobs.ACTIVE_POLL_MS,
             });
             state.pollTimer.start();
-            await uiJobs.pollStatus(state, api);
+            await uiJobs.pollStatus(state, api, data);
         } catch (error) {
             // 恢复失败不影响页面正常打开：顶部任务流仍会显示该任务。
         }
@@ -749,6 +749,7 @@
             setElementClass(els.notice, "notice error");
             setElementText(els.archiveTitle, "没有接收到文件路径");
             setElementText(els.filePath, "支持普通压缩包、.7z.001、.zip.001、.part1.rar 等格式。");
+            updateActionAvailability();
             return;
         }
 
@@ -840,16 +841,14 @@
                 && state.selectedPaths.size > 0
                 && state.selectedPaths.size < state.allFilePaths.length
             );
-            els.deleteSourceInput.disabled = !state.info
-                || state.running
-                || state.previewing;
+            els.deleteSourceInput.disabled = state.running || state.previewing;
             if (isPartialSelection) {
                 els.deleteSourceInput.parentElement?.setAttribute("title", "所选文件解压成功后删除整个源压缩包（分卷则删除全部卷）；未勾选文件不会保留");
             } else {
                 els.deleteSourceInput.parentElement?.setAttribute("title", "所选文件解压成功后自动清理源压缩包文件（若为分卷则清理全部卷）");
             }
         }
-        els.openPasswordManagerBtn.disabled = state.running || state.previewing || !state.info;
+        els.openPasswordManagerBtn.disabled = state.running || state.previewing;
         els.passwordInput.disabled = state.running || state.previewing;
         els.passwordPresetToggleBtn.disabled = state.running || state.previewing;
         els.showPasswordInput.disabled = state.running || state.previewing;

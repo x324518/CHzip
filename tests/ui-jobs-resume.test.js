@@ -5,7 +5,10 @@ const { test } = require("node:test");
 
 require("../app/www/js/ui-jobs");
 
-const { resumePollers, pollTaskMini, pollTaskCenter, pollHistory, pollStatus }
+const {
+  resumePollers, pollTaskMini, pollTaskCenter, pollHistory, pollStatus,
+  startTaskWatch,
+}
   = globalThis.CHzipUiJobs;
 
 // 与 ui-jobs.test.js 相同思路：用可控的假 document 满足 createPoller 的
@@ -145,7 +148,148 @@ test("pollTaskMini passes POLL_TIMEOUT_MS to the jobs poll", async () => {
   assert.equal(api.calls[0].options.timeoutMs, POLL_TIMEOUT_MS);
 });
 
-test("pollStatus passes POLL_TIMEOUT_MS to the status poll", async () => {
+function createTaskElement() {
+  const listeners = new Map();
+  return {
+    children: [],
+    className: "",
+    hidden: false,
+    style: {},
+    textContent: "",
+    title: "",
+    classList: {
+      add() {},
+      remove() {},
+      toggle() {},
+    },
+    append(...nodes) {
+      for (const node of nodes) {
+        node.parent = this;
+        this.children.push(node);
+      }
+    },
+    replaceChildren(...nodes) {
+      this.children = [];
+      this.append(...nodes);
+    },
+    addEventListener(type, handler) {
+      listeners.set(type, handler);
+    },
+    setAttribute() {},
+    remove() {
+      if (!this.parent) {
+        return;
+      }
+      this.parent.children = this.parent.children.filter((item) => item !== this);
+      this.parent = null;
+    },
+  };
+}
+
+async function withTaskDocument(callback) {
+  const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, "document");
+  globalThis.document = {
+    visibilityState: "visible",
+    addEventListener() {},
+    removeEventListener() {},
+    createElement: () => createTaskElement(),
+  };
+  try {
+    return await callback();
+  } finally {
+    if (originalDescriptor) {
+      Object.defineProperty(globalThis, "document", originalDescriptor);
+    } else {
+      delete globalThis.document;
+    }
+  }
+}
+
+test("task stream excludes the current job and avoids remounting stable rows", () => withTaskDocument(async () => {
+  const stream = createTaskElement();
+  const currentId = "a".repeat(32);
+  const otherId = "b".repeat(32);
+  const state = createState({
+    elements: { taskStream: stream, taskStreamRows: null },
+    jobId: currentId,
+  });
+  let otherProgress = 35;
+  const api = {
+    apiUrl(apiName) {
+      return `/cgi/?api=${apiName}`;
+    },
+    async requestJson() {
+      return {
+        active: [
+          { id: currentId, status: "running", progress: 70 },
+          {
+            id: otherId,
+            status: "running",
+            progress: otherProgress,
+            archiveName: "other.zip",
+            createdAt: "2026-10-25T00:00:00.000Z",
+          },
+        ],
+        history: [],
+      };
+    },
+  };
+
+  await pollTaskMini(state, api);
+  assert.equal(stream.hidden, false);
+  assert.equal(stream.children.length, 1);
+  const row = stream.children[0];
+  assert.equal(row.children[0].textContent, "other.zip");
+  assert.equal(row.children[2].children[0].style.transform, "scaleX(0.35)");
+
+  otherProgress = 40;
+  await pollTaskMini(state, api);
+  assert.equal(stream.children.length, 1);
+  assert.equal(stream.children[0], row, "进度变化时不应重新挂载任务行");
+  assert.equal(row.children[2].children[0].style.transform, "scaleX(0.4)");
+}));
+
+test("task stream hides when only the current main job is active", () => withTaskDocument(async () => {
+  const stream = createTaskElement();
+  const state = createState({
+    elements: { taskStream: stream, taskStreamRows: null },
+    jobId: "a".repeat(32),
+  });
+  const api = {
+    apiUrl(apiName) {
+      return `/cgi/?api=${apiName}`;
+    },
+    async requestJson() {
+      return {
+        active: [{ id: "a".repeat(32), status: "running", progress: 30 }],
+        history: [],
+      };
+    },
+  };
+
+  await pollTaskMini(state, api);
+  assert.equal(stream.hidden, true);
+  assert.equal(stream.children.length, 0);
+}));
+
+test("background task watch yields to the unified main-job poll", () => withFakeDocument(async () => {
+  let calls = 0;
+  const state = createState({ running: true, jobId: "a".repeat(32) });
+  const api = {
+    apiUrl: () => "/cgi/?api=jobs",
+    POLL_TIMEOUT_MS: 15,
+    async requestJson() {
+      calls += 1;
+      return { active: [], history: [] };
+    },
+  };
+  startTaskWatch(state, api);
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  assert.equal(calls, 0);
+  state.taskWatchTimer.stop();
+}));
+
+test("pollStatus uses one jobs poll with POLL_TIMEOUT_MS", async () => {
   const api = recordingApi();
   const state = createState({
     jobId: "a".repeat(32),
@@ -161,6 +305,7 @@ test("pollStatus passes POLL_TIMEOUT_MS to the status poll", async () => {
   });
   await pollStatus(state, api);
   assert.equal(api.calls.length, 1);
+  assert.match(api.calls[0].url, /api=jobs/);
   assert.equal(api.calls[0].options.timeoutMs, POLL_TIMEOUT_MS);
 });
 
@@ -215,7 +360,15 @@ test("pollStatus 连续失败 ≥5 次后显示连接中断，成功后恢复", 
     POLL_TIMEOUT_MS: 15,
     async requestJson() {
       ok = true;
-      return { status: "running", phase: "extracting", progress: 40 };
+      return {
+        active: [{
+          id: "a".repeat(32),
+          status: "running",
+          phase: "extracting",
+          progress: 40,
+        }],
+        history: [],
+      };
     },
   };
   await pollStatus(state, recoverApi);

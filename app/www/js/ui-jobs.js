@@ -386,14 +386,13 @@
             els.outputPreview.textContent = result.outputDir;
             els.outputPreview.title = result.outputDir;
             setJobProgress(0, "任务已排队", "等待 7-Zip 启动...", state);
-            ensureMiniPoll(state, api);
             await pollStatus(state, api);
             if (state.jobId) {
                 if (state.pollTimer) {
                     state.pollTimer.stop();
                 }
                 state.pollTimer = createPoller(() => pollStatus(state, api), {
-                    interval: 1000,
+                    interval: ACTIVE_POLL_MS,
                 });
                 state.pollTimer.start();
             }
@@ -410,15 +409,28 @@
         }
     }
 
-    async function pollStatus(state, api) {
+    function findJobInSnapshot(data, jobId) {
+        if (!jobId) {
+            return null;
+        }
+        return [...(data?.active || []), ...(data?.history || [])]
+            .find((job) => job.id === jobId) || null;
+    }
+
+    async function pollStatus(state, api, prefetchedData = null) {
         const els = state.elements;
         if (!state.jobId) {
             return;
         }
         try {
-            const job = await api.requestJson(api.apiUrl("status", {
-                jobId: state.jobId,
-            }), { timeoutMs: api.POLL_TIMEOUT_MS });
+            const data = prefetchedData || await api.requestJson(api.apiUrl("jobs"), {
+                timeoutMs: api.POLL_TIMEOUT_MS,
+            });
+            renderTaskStream(state, api, data);
+            const job = findJobInSnapshot(data, state.jobId);
+            if (!job) {
+                throw new Error("任务不存在或已过期");
+            }
             // 成功：清零失败计数并摘掉连接中断的错误态。
             state.pollFailCount = 0;
             els.progressTrack.classList.remove?.("is-error");
@@ -534,14 +546,13 @@
             state.onAvailabilityChange?.();
             state.etaTracker = null;
             setJobProgress(0, "任务已排队", "等待 7-Zip 启动...", state);
-            ensureMiniPoll(state, api);
             await pollStatus(state, api);
             if (state.jobId) {
                 if (state.pollTimer) {
                     state.pollTimer.stop();
                 }
                 state.pollTimer = createPoller(() => pollStatus(state, api), {
-                    interval: 1000,
+                    interval: ACTIVE_POLL_MS,
                 });
                 state.pollTimer.start();
             }
@@ -664,7 +675,9 @@
         if (!stream) {
             return;
         }
-        const active = (data?.active || []).slice();
+        // 当前主面板正在跟踪的任务由下方进度栏负责；顶部只展示其他后台任务。
+        const active = (data?.active || [])
+            .filter((job) => job.id !== state.jobId);
         if (!active.length) {
             stream.hidden = true;
             stream.replaceChildren();
@@ -704,9 +717,14 @@
                 text.className = "task-stream-text";
                 const pct = document.createElement("span");
                 pct.className = "task-stream-pct";
-                row.append(text, pct);
+                const track = document.createElement("span");
+                track.className = "task-stream-track";
+                const fill = document.createElement("span");
+                fill.className = "task-stream-fill";
+                track.append(fill);
+                row.append(text, pct, track);
 
-                entry = { row, text, pct };
+                entry = { row, text, pct, fill };
                 rows.set(job.id, entry);
             }
 
@@ -720,9 +738,12 @@
             if (entry.pct.textContent !== percent) {
                 entry.pct.textContent = percent;
             }
+            const scale = Math.max(0, Math.min(1, Number(job.progress) / 100 || 0));
+            const transform = `scaleX(${scale})`;
+            if (entry.fill.style.transform !== transform) {
+                entry.fill.style.transform = transform;
+            }
             seen.add(job.id);
-            // append 会把已存在的节点移动到末尾，因此这一步同时完成排序。
-            stream.append(entry.row);
         });
         for (const [jobId, entry] of rows) {
             if (!seen.has(jobId)) {
@@ -730,8 +751,17 @@
                 rows.delete(jobId);
             }
         }
+        const desiredRows = active.map((job) => rows.get(job.id).row);
+        const currentRows = Array.from(stream.children || []);
+        const orderChanged = desiredRows.length !== currentRows.length
+            || desiredRows.some((row, index) => row !== currentRows[index]);
+        if (orderChanged) {
+            stream.replaceChildren(...desiredRows);
+        }
         state.taskStreamRows = rows;
-        stream.hidden = false;
+        if (stream.hidden) {
+            stream.hidden = false;
+        }
     }
 
     async function pollTaskMini(state, api) {
@@ -794,7 +824,9 @@
         }
         let idleSteps = 0;
         const poller = createPoller(async () => {
-            if (state.taskCenterOpen) {
+            // 主任务运行时，pollStatus 的同一份 /jobs 响应同时更新主进度栏
+            // 和顶部其他任务，避免再启动第二条重复轮询。
+            if (state.taskCenterOpen || state.running) {
                 return;
             }
             const count = await pollTaskMini(state, api);
@@ -1185,7 +1217,7 @@
         }
         if (!state.pollTimer && state.jobId && state.running) {
             state.pollTimer = createPoller(() => pollStatus(state, api), {
-                interval: 1000,
+                interval: ACTIVE_POLL_MS,
             });
             state.pollTimer.start();
         }
